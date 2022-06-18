@@ -1,31 +1,32 @@
 const { expect } = require("chai");
 
 describe("My MultiToken contract", function () {
-    let ownerEthers;
-    let owner;
-    let MyIdentity;
-    let hardhatMyIdentity;
+    let deployingWallet;
+    let MyMultiToken;
+    let hardhatMyMultiToken;
     const uri = "https://linktr.ee/solarsailor";
+    const units = 10;
 
     beforeEach(async () => {
-        [ownerEthers] = await ethers.getSigners();
-        MyIdentity = await ethers.getContractFactory("MyMultiToken");
+        [deployingWallet] = await ethers.getSigners();
+        MyMultiToken = await ethers.getContractFactory("MyMultiToken");
 
-        hardhatMyIdentity = await MyIdentity.deploy(uri);
-        owner = await hardhatMyIdentity.owner();
+        hardhatMyMultiToken = await MyMultiToken.deploy(units, uri);
     });
 
 
     describe("Run Tests", () => {
-        it("Owner function should return same value as signer", async function () {
-            expect(ownerEthers.address).to.equal(owner);
-        });
-    
-        it("Output data called by key should match input data with delimiters", async function () {
-            const dataString = name + "<CR>" + linktree + "<CR>" + photoHash;
+        it("Minted correct amount of units", async function () {
+            const accounts = [units];
+            const ids = [units];
+            for(let i = 0; i < units; i++)
+            {
+                accounts[i] = deployingWallet.address;
+                ids[i] = i;
+            }
 
-            expect(ownerEthers.address).to.equal(owner);
-            expect(await hardhatMyIdentity["getData(address)"](owner)).to.equal(dataString);
+            const balanceOfBatch = await hardhatMyMultiToken.balanceOfBatch(accounts, ids);
+            expect(balanceOfBatch.reduce((partialSum, a) => parseInt(partialSum) + parseInt(a), 0)).to.equal(units);
         });
     });
 
