@@ -5,15 +5,13 @@ describe("My MultiToken contract", function () {
     let owner;
     let MyIdentity;
     let hardhatMyIdentity;
-    const name = "Solar Sailor";
-    const linktree = "linktr.ee/solarsailor";
-    const photoHash = "linktr.ee/solarsailor";
+    const uri = "https://linktr.ee/solarsailor";
 
     beforeEach(async () => {
         [ownerEthers] = await ethers.getSigners();
         MyIdentity = await ethers.getContractFactory("MyMultiToken");
 
-        hardhatMyIdentity = await MyIdentity.deploy(name, linktree, photoHash);
+        hardhatMyIdentity = await MyIdentity.deploy(uri);
         owner = await hardhatMyIdentity.owner();
     });
 
